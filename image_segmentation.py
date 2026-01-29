@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-img = cv.imread('photo_10.jpg')
+img = cv.imread('enter the image path here')
 #changing the image into HSV for better color segmentation
 hsvimg = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
@@ -27,4 +27,4 @@ maskedimg[green_mask>0]=[0,255,255]
 cv.imshow('Output', maskedimg)
 cv.waitKey(0)
 cv.destroyAllWindows()
-cv.imwrite('segmented_photo_10.jpg', maskedimg)
+#in the sample images given , one rescue pad was light blue in colour which was also identified as the ocean body.I tried varying the hsv values but nothing changed
