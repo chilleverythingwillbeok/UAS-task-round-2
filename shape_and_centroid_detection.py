@@ -1,31 +1,23 @@
+#this code cannot distinguish between triangle and squares well enough because of the blurred edges in the sample input images
+#it identifies the shapes and their centroids and prints them as a list [shape,centroid coordinates]
 import cv2
 import numpy as np
-
 def detect_shapes_and_centroids(image_path):
-    # Load the image
-    img = cv2.imread(image_path)
+    img = cv2.imread(image_path)  #image loading
     if img is None:
         print("Error: Image not found.")
         return
-
-    # Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Apply Gaussian Blur to smooth out the texture noise
-    # This prevents the texture from being detected as edges
-    blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-
-    # Use Canny Edge Detection
-    # Thresholds are chosen to catch shape boundaries but ignore texture
-    edges = cv2.Canny(blurred, 50, 150)
-
-    # Dilate the edges to ensure contours are closed
+        
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #invert to grayscale
+    
+    blurred = cv2.GaussianBlur(gray, (7, 7), 0) #Apply Gaussian Blur to smooth out the texture noise This prevents the texture from being detected as edges
+    
+    edges = cv2.Canny(blurred, 50, 150) #Canny Edge Detection
+    
     kernel = np.ones((5, 5), np.uint8)
-    dilated = cv2.dilate(edges, kernel, iterations=1)
-
-    # Find Contours
-    contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    dilated = cv2.dilate(edges, kernel, iterations=1) # edge dialation
+    
+    contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)# Find Contours
     results = []
 
     for cnt in contours:
@@ -38,7 +30,7 @@ def detect_shapes_and_centroids(image_path):
         if area < 500 or area > 10000:
             continue
 
-        # Calculate Centroid using Moments
+        # Calculation of Centroids using Moments
         M = cv2.moments(cnt)
         if M["m00"] != 0:
             cx = int(M["m10"] / M["m00"])
@@ -81,16 +73,16 @@ def detect_shapes_and_centroids(image_path):
                 else:
                     shape_name = "Circle"
 
-        # Append to results list as requested
+        # Append(add) to results list 
         results.append([shape_name, (cx, cy)])
 
-        # Visualization (Optional: Draw name and centroid on image)
+        # Visualization(It is not necessary for the actual logic or calculation. Its only purpose is to draw the visual labels on the picture)
         cv2.drawContours(img, [cnt], -1, (0, 255, 0), 2)
         cv2.circle(img, (cx, cy), 5, (0, 0, 255), -1)
         cv2.putText(img, shape_name, (cx - 20, cy - 20),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-    # Print the final list
+    # final list
     print("Detected List [Shape, (Centroid X, Centroid Y)]:")
     for item in results:
         print(item)
@@ -99,6 +91,4 @@ def detect_shapes_and_centroids(image_path):
     cv2.imshow("Identified Shapes", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-# Run the function with your image file name
-detect_shapes_and_centroids('photo_2.jpg')
+detect_shapes_and_centroids('enter image path here')
